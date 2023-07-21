@@ -37,9 +37,9 @@ function DatabaseCells() {
     return (<div className="text-sm text-gray-800">
         {rows.map(row => <div key={row.id} className="h-8 flex border-b-[1px] first:border-t-[1px] border-gray-200">{
                 row.cells.map((value, i) =>
-                    <div className={`flex flex-0 items-center border-r-[1px] border-gray-200`} key={i}>
+                    <div className={`flex flex-0 items-center`} key={i}>
                         {i === 0 && <CheckBox />}
-                        <div className={`flex px-2 py-1`} style={{width: `${widths[i]}px`}}> {value}</div>
+                        <div className={`flex px-2 py-1 h-full border-r-[1px] border-gray-200`} style={{width: `${widths[i]}px`}}> {value}</div>
                     </div>)
             }</div>)
         }
