@@ -1,4 +1,5 @@
 import {createContext, useEffect, useReducer} from "react";
+import {produce} from "immer";
 
 
 const stubs = {
@@ -49,18 +50,26 @@ type Action = {
 } | {
     type: "set_cell",
     payload: {rowNum: number, name: string, value:any }
+} | {
+    type: "add_row",
+    payload: {afterRowNum: number}
 }
+
 function databaseReducer(state, action: Action) {
     switch(action.type) {
         case 'set_database':
             return action.payload.database
         case 'set_cell':
             const {rowNum, name, value} = action.payload
-            const ret = {
-                ...state
-            }
-            ret[rowNum][name] = value
+            const ret =  produce(state, draft => {
+                draft.rows[rowNum].data[name] = value
+            })
             return ret
+        case 'add_row':
+            const {addRowAfter} = action.payload
+            return produce(state, draft => {
+                draft.rows.push({data :{}}) // TODO add id
+            })
 
     }
 }
@@ -83,10 +92,15 @@ export function DatabaseProvider({children}: {children: React.ReactNode}) {
         dispatch({type: 'set_cell', payload: {rowNum, name, value}})
     }
 
+    const addRowAfter = (afterRowNum: number) => {
+        dispatch({type: "add_row", payload: {afterRowNum}})
+    }
+
     return (<DatabaseContext.Provider
         value={{
             headers: database.headers,
             rows: database.rows,
+            addRowAfter,
             setCell,
             dispatch
     }}
